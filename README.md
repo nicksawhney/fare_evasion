@@ -13,3 +13,6 @@ All the data needed to explore fare evasion arrests is included in this repo (th
 [3]: https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u/data
 
 
+### Want to help?
+
+This project is currently in the very early stages of development, but if you would like to help improve the code or add functionality please feel free to reach out to me, fork, and add pull requests!
