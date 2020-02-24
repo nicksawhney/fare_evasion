@@ -15,8 +15,8 @@ Documentation will become more detailed as the project expands
 '''
 
 
-def load_tos_arrests(hist_path='NYPD_Arrests_Data__Historic_.csv', 
-                     ytd_path='NYPD_Arrest_Data__Year_to_Date_.csv',
+def load_tos_arrests(hist_path='data/NYPD_Arrests_Data__Historic_.csv', 
+                     ytd_path='data/NYPD_Arrest_Data__Year_to_Date_.csv',
                      save=False):
 
     historic = gpd_from_csv(hist_path)
@@ -35,12 +35,12 @@ def load_tos_arrests(hist_path='NYPD_Arrests_Data__Historic_.csv',
 
 
 
-def load_all_data(station_file='stations.csv', 
-                  evasions_file='evasions.csv',
-                  acs_file='2013_2017_acs.dta',
-                  tract_file = 'nyu_2451_34505',
-                  lines_file='Subway Lines.geojson',
-                  city_shapefile = 'new-york-city-boroughs.geojson',
+def load_all_data(station_file='data/stations.csv', 
+                  evasions_file='data/evasions.csv',
+                  acs_file='data/2013_2017_acs.dta',
+                  tract_file = 'data/nyu_2451_34505',
+                  lines_file='data/Subway Lines.geojson',
+                  city_shapefile = 'data/new-york-city-boroughs.geojson',
                   include_arrests=True, 
                   start_date=pd.datetime(2010, 1, 1),
                   end_date=pd.datetime(2030, 1, 1)):
@@ -186,7 +186,7 @@ def plot_num_arrests_station(stations,
 #     ax.legend(prop={'size':20})
 
     if save:
-        plt.savefig(f'{title}.png')
+        plt.savefig(f'figs/{title}.png')
 
     plt.show()
 
