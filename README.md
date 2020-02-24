@@ -4,6 +4,12 @@ I'm a senior at NYU, this is the repository with all the code I've written for m
 
 If you'd like to interactively explore this data, go to [the github pages version of this repo][1]
 
+## Instructions and Requirements 
+
+All the data needed to explore fare evasion arrests is included in this repo (the process by which I created the data sets will be added here shortly, and be explained in an upcoming paper). If you would like to recreate this data set from the source, or with alternative parameters, you must first download the [Year-To-Date][2] and the [Historic][3] arrest record data sets from NY Open Data to the `data` directory. Instructions for replicating the data set with different parameters can be found in the `Filter Arrests` notebook. 
+
 [1]: https://nicksawhney.github.io/fare_evasion
+[2]: https://data.cityofnewyork.us/Public-Safety/NYPD-Arrest-Data-Year-to-Date-/uip8-fykc/data
+[3]: https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u/data
 
 
