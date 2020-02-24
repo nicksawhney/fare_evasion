@@ -69,8 +69,8 @@ def load_all_data(station_file='data/stations.csv',
     nyc = gpd.read_file(city_shapefile)
 
     # Load demographic and census tract information
-    acs_data = pd.read_stata('2013_2017_acs.dta')
-    census_tracts = gpd.read_file('nyu_2451_34505')
+    acs_data = pd.read_stata(acs_file)
+    census_tracts = gpd.read_file(tract_file)
 
 
     # Merge itno one census data set
