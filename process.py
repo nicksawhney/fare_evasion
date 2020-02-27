@@ -48,6 +48,8 @@ def load_all_data(station_file='data/stations.csv',
     '''
         Loads datasets and conforms to uniform schemas when necessary
         Important for quick merging and exploring down the line
+
+        returns: stations, evasions, census, lines, nyc
     '''
 
     # Load the station data and type the buffer column properly
