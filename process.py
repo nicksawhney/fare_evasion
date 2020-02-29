@@ -41,7 +41,8 @@ def load_all_data(station_file='data/stations.csv',
                   tract_file = 'data/nyu_2451_34505',
                   lines_file='data/Subway Lines.geojson',
                   city_shapefile = 'data/new-york-city-boroughs.geojson',
-                  include_arrests=True, 
+                  include_arrests=True,
+                  include_race=True, 
                   start_date=pd.datetime(2010, 1, 1),
                   end_date=pd.datetime(2030, 1, 1)):
 
@@ -64,7 +65,11 @@ def load_all_data(station_file='data/stations.csv',
 
     # populate with fare evasion arrests if needed
     if include_arrests:
-        stations = populate_arrests(stations, evasions, start_date=start_date, end_date=end_date)
+        stations = populate_arrests(stations, 
+                                    evasions, 
+                                    start_date=start_date, 
+                                    end_date=end_date,
+                                    breakdown_race=include_race)
 
     # Get shape files!
     lines = gpd.read_file(lines_file)
@@ -110,10 +115,14 @@ def populate_arrests(stations,
                      evasions, 
                      start_date=pd.datetime(2010, 1, 1), 
                      end_date=pd.datetime(2030, 1, 1), 
-                     arr_column='arrests'):
+                     arr_column='arrests',
+                     breakdown_race=True):
     '''
         Populate the subway station DataFrame with the number of arrests at each station according to the evasions DataFrame
         over a specified time period.
+
+        stations: the DataFrame of subway stations
+        evasions: the DataFrame of fare evasions
     '''
 
     ev = evasions[evasions['ARREST_DATE'] >= start_date]
@@ -130,6 +139,40 @@ def populate_arrests(stations,
     st[arr_column] = ev.groupby('station_id').count()['ARREST_DATE']
 
     st[arr_column] = st[arr_column].fillna(value=0)
+
+    if breakdown_race:
+        station_race_groups = evasions.groupby(['station_id', 'PERP_RACE'])
+
+        race_arrests_station = station_race_groups[['ARREST_KEY']]\
+                                    .count()                      \
+                                    .reset_index()                \
+                                    .pivot(
+                                        index='station_id',
+                                        columns='PERP_RACE',
+                                        values='ARREST_KEY')      \
+                                    .reset_index()                \
+                                    .set_index('station_id')      \
+                                    .fillna(0)
+
+        
+        readable_race_strs = [
+            'Native American',
+            'Asian',
+            'Black',
+            'Black Hispanic',
+            'Unknown',
+            'White',
+            'White Hispanic']
+
+        race_name_dict = {k:v for k, v in zip(race_arrests_station.columns, readable_race_strs)}
+        race_arrests_station = race_arrests_station.rename(race_name_dict, axis=1)
+
+        st[race_arrests_station.columns] = race_arrests_station
+        
+        st['Hispanic'] = st['Black Hispanic'] + st['White Hispanic'] 
+        st = st.drop(['Black Hispanic', 'White Hispanic'], axis=1)
+
+        st = st.fillna(0)
     
     return st
     
@@ -244,7 +287,7 @@ def get_demo(station_row, census, indicator):
     if 'fips' in census.columns:
         census = census.set_index('fips')
         
-    int_fips = station_row['int_fips']
+    int_fips = get_intersecting_fips(station_row, census)
     
     ind_val = 0
     
