@@ -116,7 +116,8 @@ def populate_arrests(stations,
                      start_date=pd.datetime(2010, 1, 1), 
                      end_date=pd.datetime(2030, 1, 1), 
                      arr_column='arrests',
-                     breakdown_race=True):
+                     breakdown_race=True,
+                     combine_hispanic=True):
     '''
         Populate the subway station DataFrame with the number of arrests at each station according to the evasions DataFrame
         over a specified time period.
@@ -155,22 +156,37 @@ def populate_arrests(stations,
                                     .fillna(0)
 
         
-        readable_race_strs = [
-            'Native American',
-            'Asian',
-            'Black',
-            'Black Hispanic',
-            'Unknown',
-            'White',
-            'White Hispanic']
+        race_name_dict = {
+            'AMERICAN INDIAN/ALASKAN NATIVE': 'Native American',
+            'ASIAN / PACIFIC ISLANDER': 'Asian',
+            'BLACK': 'Black',
+            'BLACK HISPANIC': 'Black Hispanic',
+            'UNKNOWN': 'Unknown',
+            'WHITE': 'White',
+            'WHITE HISPANIC': 'White Hispanic'}
 
-        race_name_dict = {k:v for k, v in zip(race_arrests_station.columns, readable_race_strs)}
         race_arrests_station = race_arrests_station.rename(race_name_dict, axis=1)
 
         st[race_arrests_station.columns] = race_arrests_station
         
-        st['Hispanic'] = st['Black Hispanic'] + st['White Hispanic'] 
-        st = st.drop(['Black Hispanic', 'White Hispanic'], axis=1)
+        if combine_hispanic:
+            try:
+                st['Hispanic'] = st['Black Hispanic'] + st['White Hispanic'] 
+
+            except KeyError:
+                if 'White Hispanic' in st.columns:
+                    st['Hispanic'] = st['White Hispanic']
+
+                elif 'Black Hispanic' in st.columns:
+                    st['Hispanic'] = st['Black Hispanic']
+                else:
+                    st['Hispanic'] = 0
+
+            finally:
+                st['White Hispanic'] = 0
+                st['Black Hispanic'] = 0
+
+            st = st.drop(['Black Hispanic', 'White Hispanic'], axis=1)
 
         st = st.fillna(0)
     
@@ -258,7 +274,7 @@ def get_intersecting_fips(station_buffer_row, census):
         census = census.set_index('fips')
         
         # make sure the index is fips
-        
+    
     for fips, tract in census.iterrows():
         census_geom = tract.geometry
         
@@ -276,7 +292,7 @@ def get_intersecting_fips(station_buffer_row, census):
     return intersections
 
 
-def get_demo(station_row, census, indicator):
+def get_demo(station_row, census, indicators):
     '''
         Get the weighted demographic information from the `indicator` column of `census` 
         for station_row
@@ -286,15 +302,21 @@ def get_demo(station_row, census, indicator):
 
     if 'fips' in census.columns:
         census = census.set_index('fips')
-        
-    int_fips = get_intersecting_fips(station_row, census)
-    
-    ind_val = 0
-    
-    for fips, weight in int_fips:
-        ind_val += census[indicator].loc[fips] * weight
 
-    return ind_val
+    int_fips = get_intersecting_fips(station_row, census)
+
+    vals = {}
+    
+    for indicator in indicators:
+        print(indicator, end='\r', flush=True)
+        ind_val = 0
+        for fips, weight in int_fips:
+            ind_val += census[indicator].loc[fips] * weight
+
+        vals[indicator] = ind_val
+
+
+    return vals
 
 def split_arrest_data(evasions, cutoff=pd.datetime(2018, 2, 2), include_pre=False):
     '''
