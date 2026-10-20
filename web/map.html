@@ -56,8 +56,13 @@
         
     
             var tile_layer_a62679336b3342fdbf4e4f1a3b0b69ab = L.tileLayer(
-                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+                "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                {"attribution": "Tiles \u0026copy; \u003ca href=\"https://www.esri.com/\"\u003eEsri\u003c/a\u003e \u2014 Esri, DeLorme, NAVTEQ, and the GIS user community", "detectRetina": false, "maxNativeZoom": 16, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "tms": false}
+            ).addTo(map_8ee7f83d05ce46aeaf06878b6aacf1d8);
+
+            var tile_layer_labels_a62679336b3342fdbf4e4f1a3b0b69ab = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+                {"attribution": "", "detectRetina": false, "maxNativeZoom": 16, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "tms": false}
             ).addTo(map_8ee7f83d05ce46aeaf06878b6aacf1d8);
         
     
